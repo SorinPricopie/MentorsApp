@@ -68,7 +68,7 @@ function AppLanguages(props: {department: Department, year: Year, semester: Seme
                     </Box> :
                     <Box>
                         <Typography variant='body2' component='span' color={deepOrange[400]}>
-                            No languages, please add one.
+                            No languages, please add one!
                         </Typography>
                     </Box>
                 }
