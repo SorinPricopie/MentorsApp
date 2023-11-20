@@ -1,0 +1,5 @@
+background: 15202B - 21,32,43
+card: 192734 - 25,39,52
+hover: 22303C - 34,48, 60
+primary text: FFFFFF - 255,255,255
+secondary text: 8899A6 - 136, 153, 166
