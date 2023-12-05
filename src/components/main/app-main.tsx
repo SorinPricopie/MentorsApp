@@ -386,9 +386,8 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
         }
         case DISPATCH_ACTIONS.ADD_MENTOR: {
             const {name, canTeach} = action.payload as Mentor;
-            if(name && isNotDuplicate(state.mentorsList.map(mentor => mentor.name), name)) {
                 const id = state && state.mentorsList && state.mentorsList.length > 0 ? state.mentorsList[state.mentorsList.length - 1].id + 1 : 1;
-                result = state.mentorsList ?
+                result = name && state.mentorsList && isNotDuplicate(state.mentorsList.map(mentor => mentor.name), name) ?
                     {
                         ... state,
                         mentorsList: [
@@ -412,7 +411,6 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
                             }
                         ]
                     };
-            }
             break;
         }
         default: {
