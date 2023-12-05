@@ -84,9 +84,8 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
     let result: AppState = state;
     switch (action.type) {
         case DISPATCH_ACTIONS.ADD_DEPARTMENT: {
-            if(action.payload && isNotDuplicate(state.departmentsList.map(department => department.name), action.payload as string)) {
                 const id = state.departmentsList && state.departmentsList.length > 0 ? state.departmentsList[state.departmentsList.length - 1].id + 1 : 1;
-                result = state.departmentsList ?
+                result = state.departmentsList && action.payload && isNotDuplicate(state.departmentsList.map(department => department.name), action.payload as string) ?
                     {
                         ... state,
                         departmentsList: [
@@ -139,7 +138,6 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
                         ]
                     };
                 localStorage.setItem('appMentorData:', JSON.stringify(result))
-            }
             break;
         }
         case DISPATCH_ACTIONS.CLICK_DEPARTMENT_LIST: {
