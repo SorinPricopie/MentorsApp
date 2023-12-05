@@ -17,14 +17,14 @@ function SemestersList(props: {department: Department, year: Year}) {
 
     const List = () => year.semesters.map((semester) => {
         return (
-            <>
+            <Box key={semester.id}>
             <Box 
-                key={semester.id}  
-                sx={{
-                    padding: '0 0 0 2rem',
+                  sx={{
+                    padding: '0 0 0 1.9rem',
                     cursor: 'pointer',
                     display: 'flex',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    boxSizing: 'inherit'
                 }}
                 onClick={() => handleOnClickSemesterList({departmentID: department.id, yearID: year.id, semesterID: semester.id})}
             >
@@ -34,7 +34,8 @@ function SemestersList(props: {department: Department, year: Year}) {
                             color='warning' 
                             size='small'
                             sx={{
-                                marginRight: '0.5rem'
+                                marginRight: '0.5rem',
+                                boxSizing: 'inherit'
                             }}
                             onClick={() => handleOnDeleteSemester({departmentID: department.id, yearID: year.id, semesterID: semester.id})}
                         >
@@ -46,7 +47,8 @@ function SemestersList(props: {department: Department, year: Year}) {
                     <Box sx={{
                         display: 'inherit',
                         alignItems: 'inherit',
-                        padding: '0.25rem 0 0'
+                        padding: '0.25rem 0 0',
+                        boxSizing: 'inherit'
                     }}>
                         Semester {semester.semester}
                         {semester.clicked ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
@@ -57,7 +59,7 @@ function SemestersList(props: {department: Department, year: Year}) {
                 semester.clicked &&
                 <AppLanguages department={department} year={year} semester={semester}/>
             }
-            </>
+            </Box>
         )
     });
 

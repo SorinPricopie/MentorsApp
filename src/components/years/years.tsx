@@ -36,13 +36,15 @@ function Years(props: {department: Department}) {
             <Box sx={{
                 display: 'flex',
                 alignItems: 'center',
-                margin: '0 0 0 2rem'
+                margin: '0 0 0 1.8rem',
+                boxSizing: 'inherit'
             }}>
                 <Tooltip title='Add year'>
                     <IconButton
                         color='info' 
                         sx={{
-                            marginRight: '0.5rem'
+                            marginRight: '0.5rem',
+                            boxSizing: 'inherit'
                         }}
                         disabled={!canAddYear}
                         onClick={() => handleAddYear(department.id)}

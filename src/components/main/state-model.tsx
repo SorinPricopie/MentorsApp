@@ -1,6 +1,7 @@
 export interface AppState {
     departmentsList: Department[],
-    mentorsList: Mentor[]
+    mentorsList: Mentor[],
+    languagesList?: Language[]
 }
 
 export interface Department {
@@ -29,12 +30,13 @@ export interface Language {
     id: number
     rithm: string
     groups: number
+    clicked: boolean
 }
 
 export interface Mentor {
     name: string
     id: number
-    canTeach: number[]
+    canTeach: string[]
     assignements: Assignement[]
 }
   

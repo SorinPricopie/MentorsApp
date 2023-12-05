@@ -1,10 +1,9 @@
 import Box from "@mui/material/Box";
 import { Theme } from "@mui/material/styles";
 import React, { Dispatch, useReducer } from "react";
-import {AppState, Semester, Year} from "./state-model";
+import {AppState, Language, Mentor, Semester, Year} from "./state-model";
 import AppDepartments from "../departments/app-departments";
 import AppMentors from "../mentors/app-mentors";
-import Years from "../years/years";
 
 export const AppStateProvider = React.createContext({} as {
     appState: AppState;
@@ -16,7 +15,6 @@ export interface DeleteYearPayload {
     yearID: number
 }
 
-
 export interface DeleteSemesterPayload {
     departmentID: number,
     yearID: number,
@@ -26,6 +24,16 @@ export interface DeleteSemesterPayload {
 export interface LanguageRithm {
     rithm: string,
     id: number
+}
+
+export interface DeleteLanguagePayload {
+    departmentID: number,
+    yearID: number,
+    semesterID: number,
+    name?: string
+    id?: number
+    rithm?: string
+    groups?: number
 }
 
 export const enum DISPATCH_ACTIONS {
@@ -39,6 +47,8 @@ export const enum DISPATCH_ACTIONS {
     DELETE_SEMESTER,
     CLICK_SEMESTER_LIST,
     ADD_LANGUAGE,
+    DELETE_LANGUAGE,
+    CLICK_LANGUAGE_LIST,
     ADD_MENTOR
 };
 
@@ -63,66 +73,73 @@ export const LANGUAGE_RITHM: LanguageRithm[] = [
 
 type REDUCER_ACTIONS = {
     type:  DISPATCH_ACTIONS,
-    payload?: string | number | DeleteYearPayload | DeleteSemesterPayload
+    payload?: string | number | DeleteYearPayload | DeleteSemesterPayload | DeleteLanguagePayload | Mentor
+}
+
+const isNotDuplicate = (arr: string[], item: string): boolean => {
+    return arr.includes(item) ? false : true;
 }
 
 const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
     let result: AppState = state;
     switch (action.type) {
         case DISPATCH_ACTIONS.ADD_DEPARTMENT: {
-            const id = state.departmentsList && state.departmentsList.length > 0 ? state.departmentsList[state.departmentsList.length - 1].id + 1 : 1;
-            result = state.departmentsList ?
-                {
-                    ... state,
-                    departmentsList: [
-                        ...state.departmentsList,
-                        {
-                            name: action.payload ? action.payload.toString() : '',
-                            id: id,
-                            years: [
-                                {
-                                    year: 1,
-                                    id: 1,
-                                    semesters: [
-                                        {
-                                            semester: 1,
-                                            id: 1,
-                                            languages: [],
-                                            clicked: false
-                                        }
-                                    ],
-                                    clicked: false
-                                }
-                            ],
-                            clicked: false
-                        }
-                    ]
-                } :
-                {
-                    ... state,
-                    departmentsList: [
-                        {
-                            name: action.payload ? action.payload.toString() : '',
-                            id: id,
-                            years: [
-                                {
-                                    year: 1,
-                                    id: 1,
-                                    semesters: [
-                                        {
-                                            semester: 1,
-                                            id: 1,
-                                            languages: [],
-                                            clicked: false
-                                        }
-                                    ],
-                                    clicked: false
-                                }
-                            ],
-                            clicked: false
-                        }
-                    ]
-                };
+            if(action.payload && isNotDuplicate(state.departmentsList.map(department => department.name), action.payload as string)) {
+                const id = state.departmentsList && state.departmentsList.length > 0 ? state.departmentsList[state.departmentsList.length - 1].id + 1 : 1;
+                result = state.departmentsList ?
+                    {
+                        ... state,
+                        departmentsList: [
+                            ...state.departmentsList,
+                            {
+                                name: action.payload ? action.payload.toString() : '',
+                                id: id,
+                                years: [
+                                    {
+                                        year: 1,
+                                        id: 1,
+                                        semesters: [
+                                            {
+                                                semester: 1,
+                                                id: 1,
+                                                languages: [],
+                                                clicked: false
+                                            }
+                                        ],
+                                        clicked: false
+                                    }
+                                ],
+                                clicked: false
+                            }
+                        ]
+                    } :
+                    {
+                        ... state,
+                        departmentsList: [
+                            {
+                                name: action.payload ? action.payload.toString() : '',
+                                id: id,
+                                years: [
+                                    {
+                                        year: 1,
+                                        id: 1,
+                                        semesters: [
+                                            {
+                                                semester: 1,
+                                                id: 1,
+                                                languages: [],
+                                                clicked: false
+                                            }
+                                        ],
+                                        clicked: false
+                                    }
+                                ],
+                                clicked: false
+                            }
+                        ]
+                    };
+                localStorage.setItem('appMentorData:', JSON.stringify(result))
+            }
             break;
         }
         case DISPATCH_ACTIONS.CLICK_DEPARTMENT_LIST: {
@@ -262,8 +279,142 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
             break;
         }
         case DISPATCH_ACTIONS.ADD_LANGUAGE: {
+            const {
+                departmentID, 
+                yearID, 
+                semesterID,
+                name,
+                rithm,
+                groups
+            } = action.payload as DeleteLanguagePayload;
+            const department = state.departmentsList.filter(department => department.id === departmentID)[0];
+            const year = department.years.filter(year => year.id === yearID)[0];
+            const semester = year.semesters.filter(semester => semester.id === semesterID)[0];
+
+            if(name && isNotDuplicate(semester.languages.map(language => language.name), name)) {
+                const newLanguageID: number = semester.languages.length > 0 ? 
+                semester.languages[semester.languages.length - 1].id + 1 :
+                1;
+    
+                const newSemesterLanguage: Language = {
+                    name: name || '',
+                    id: newLanguageID,
+                    rithm: rithm || '',
+                    groups: groups || 0,
+                    clicked: false
+                };
+    
+                state.departmentsList.forEach(department => {
+                    if(department.id === departmentID) {
+                        department.years.forEach(year => {
+                            if(year.id === yearID) {
+                                year.semesters.forEach(semester => {
+                                    if(semester.id === semesterID) {
+                                        semester.languages = [...semester.languages, newSemesterLanguage]
+                                    }
+                                })
+                            }
+                        })
+                    }
+                });
+    
+                const languageID = state.languagesList && state.languagesList.length > 0 ? state.languagesList[state.languagesList.length - 1].id + 1 : 1;
+    
+                const newLanguage: Language = {
+                    name: name || '',
+                    id: languageID,
+                    rithm: '',
+                    groups: 0,
+                    clicked: false
+                };
+    
+                const hasLanguage = state.languagesList && state.languagesList.length > 0 ? true : false;
+    
+                const languages = state.departmentsList.map(language => language.name);
+    
+                state.languagesList = hasLanguage ? 
+                        languages.includes(name || '') ?
+                            state.languagesList :  [...(state.languagesList || []), newLanguage]
+                    :
+                    [...(state.languagesList || []), newLanguage];
+                
+                result = {...state};
+            }
+            break;
+        }
+        case DISPATCH_ACTIONS.DELETE_LANGUAGE: {
+            const {departmentID, yearID, semesterID, id} = action.payload as DeleteLanguagePayload;
+            state.departmentsList.forEach(department => {
+                if(department.id === departmentID) {
+                    department.years.forEach(year => {
+                        if(year.id === yearID) {
+                            year.semesters.forEach(semester => {
+                                if(semester.id === semesterID) {
+                                    semester.languages = semester.languages.filter(language => language.id !== id);
+                                }
+                            })
+                        }
+                    })
+                }
+            });
 
             result = {...state};
+            break;
+        }
+        case DISPATCH_ACTIONS.CLICK_LANGUAGE_LIST: {
+            const {departmentID, yearID, semesterID, id} = action.payload as DeleteLanguagePayload;
+            state.departmentsList.forEach(department => {
+                if(department.id === departmentID) {
+                    department.years.forEach(year => {
+                        if(year.id === yearID) {
+                            year.semesters.forEach(semester => {
+                                if(semester.id === semesterID) {
+                                    semester.languages.forEach(language => {
+                                        if(language.id === id) {
+                                            language.clicked = !language.clicked;
+                                        } else {
+                                            language.clicked = language.clicked;
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+            });
+            
+            result = {...state};
+            break;
+        }
+        case DISPATCH_ACTIONS.ADD_MENTOR: {
+            const {name, canTeach} = action.payload as Mentor;
+            if(name && isNotDuplicate(state.mentorsList.map(mentor => mentor.name), name)) {
+                const id = state && state.mentorsList && state.mentorsList.length > 0 ? state.mentorsList[state.mentorsList.length - 1].id + 1 : 1;
+                result = state.mentorsList ?
+                    {
+                        ... state,
+                        mentorsList: [
+                            ...state.mentorsList,
+                            {
+                                name: name ? name.toString() : '',
+                                id: id,
+                                canTeach: canTeach,
+                                assignements: []
+                            }
+                        ]
+                    } :
+                    {
+                        ... state,
+                        mentorsList: [
+                            {
+                                name: name ? name.toString() : '',
+                                id: id,
+                                canTeach: canTeach,
+                                assignements: []
+                            }
+                        ]
+                    };
+            }
             break;
         }
         default: {
@@ -275,28 +426,47 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
 
 function AppMain(props: {theme: Theme}) {
     const {theme} = props;
+    
+    const _appState = JSON.parse(localStorage.getItem('appMentorData:') || '{}') || {};
+    // const _appState = {};
 
-    const _appState = {};
-
-    // const [appState, setAppState] = useState(_appState);
     const [appState, dispatch] = useReducer(reducer, _appState as AppState);
 
     const memoAppState = React.useMemo(() => ({appState, dispatch}), [_appState])
+
+    if(Object.keys(appState).length > 0) {
+        localStorage.removeItem('appMentorData:');
+        localStorage.setItem('appMentorData:', JSON.stringify(appState));
+    };
+
     return (
         <Box sx={{
-            height: '100%',
             background: theme.palette.mode.toString() === 'dark' ? '#192734' : 'white',
+            boxSizing: 'inherit',
+            minHeight: '100%',
+            flex: 'auto'
         }}>
             <AppStateProvider.Provider value={memoAppState}>
                 <Box sx={{
                     display: 'flex',
                     padding: '1rem 1rem 1rem',
                     gap: '1rem',
-                    height: '100%',
-                    boxSizing: 'border-box'
+                    boxSizing: 'inherit',
+                    minHeight: '88.25vh'
                 }}>
-                    {<AppDepartments />}
-                    {<AppMentors />}
+                    <Box sx={{
+                        boxSizing: 'inherit',
+                        width: '100%'
+                    }}>
+                        {<AppDepartments />}
+                    </Box>
+                    <Box sx={{
+                        boxSizing: 'inherit',
+                        width: '100%',
+                        borderLeft: '1px solid rgb(136, 153, 166)'
+                    }}>
+                        {<AppMentors />}
+                    </Box>
                 </Box>
             </AppStateProvider.Provider>
         </Box>

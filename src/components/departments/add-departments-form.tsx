@@ -12,8 +12,10 @@ function AddDepartmentForm(props: {isAddDepartmentFormVisible: () => void}) {
     const [departmentNameInput, setDepartmentNameInput] = useState('FrontEnd');
     const [isDepartmentNameInputValid, setIsDepartmentNameInputValid] = useState(true);
     const handleDepartmentNameInput = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setIsDepartmentNameInputValid(e.target.value.length > 0 ? true : false);
-        setDepartmentNameInput(e.target.value);
+        if(e) {
+            setIsDepartmentNameInputValid(e.target.value.length > 0 ? true : false);
+            setDepartmentNameInput(e.target.value);
+        }
     }
 
     function onSaveDepartment(e: any) {
@@ -27,17 +29,29 @@ function AddDepartmentForm(props: {isAddDepartmentFormVisible: () => void}) {
             border: '1px solid whitesmoke',
             borderRadius: '5px',
             padding: '1rem',
+            margin: '1rem 0',
+            boxSizing: 'inherit'
             }}>
+            <Typography
+                variant="h6"
+                component='p'
+                sx={{
+                    padding: '0 0 1rem'
+                }}
+            >
+                ADD DEPARTMENT FORM
+            </Typography>
             <Typography
                 variant='body1'
                 component='h3'
+                sx={{
+                    padding: '0.5rem 0'
+                }}
             >
                 Department's name:
             </Typography>
             <form noValidate onSubmit={(e) => onSaveDepartment(e)}>
-                <Box sx={{
-                    margin: '1rem 0 0'
-                }}>
+                <Box>
                     <TextField
                         required
                         id="departmentNameInput"
@@ -48,10 +62,13 @@ function AddDepartmentForm(props: {isAddDepartmentFormVisible: () => void}) {
                     />
                 </Box>
                 <Box sx={{
-                    margin: '1rem 0 0 -0.5rem'
+                    padding: '1rem 0 0',
+                    margin: '1rem 0 0 -0.5rem',
+                    boxSizing: 'inherit'
                 }}>
                     <Button sx={{
-                        margin: '0 0.5rem 0'
+                        margin: '0 0.5rem 0',
+                        boxSizing: 'inherit'
                     }}
                         type='button'
                         variant='outlined' 

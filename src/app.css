@@ -1,11 +1,12 @@
-header {
+/* header {
     height: 7vh;
 }
 
 main {
     height: 88vh;
+    min-height: 88vh;
 }
 
 footer {
     height: 5vh;
-}
+} */

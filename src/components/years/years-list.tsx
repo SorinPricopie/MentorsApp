@@ -25,12 +25,13 @@ function YearsList(props: {department: Department, year: Year, index: number}) {
     }
 
     return (
-        <Box sx={{padding: '0 0 0 4.5rem'}}>
+        <Box sx={{padding: '0 0 0 4.15rem', boxSizing: 'inherit'}}>
             <Box 
                 sx={{
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
+                boxSizing: 'inherit'
                 }}
                 onClick={() => handleOnClickYearList({departmentID: department.id, yearID: year.id})}
             >
@@ -40,7 +41,8 @@ function YearsList(props: {department: Department, year: Year, index: number}) {
                             color='warning' 
                             size='small'
                             sx={{
-                                marginRight: '0.5rem'
+                                marginRight: '0.5rem',
+                                boxSizing: 'inherit'
                             }}
                             onClick={() => handleOnDeleteYear({departmentID: department.id, yearID: year.id})}
                         >
@@ -52,7 +54,8 @@ function YearsList(props: {department: Department, year: Year, index: number}) {
                     <Box sx={{
                         display: 'inherit',
                         alignItems: 'inherit',
-                        padding: '0.25rem 0 0'
+                        padding: '0.25rem 0 0',
+                        boxSizing: 'inherit'
                     }}>
                         Year {year.year}
                         {year.clicked ? <ArrowDropDownIcon /> : <ArrowRightIcon />}

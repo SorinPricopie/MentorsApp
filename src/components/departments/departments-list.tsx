@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AppStateProvider, DISPATCH_ACTIONS } from "../main/app-main";
 import Box from "@mui/material/Box";
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -16,7 +16,8 @@ function DepartmentsList() {
         dispatch({type: DISPATCH_ACTIONS.CLICK_DEPARTMENT_LIST, payload: i});
     }
 
-    const handleOnDeleteDeparment = (i: number) => {
+    const handleOnDeleteDeparment = (e: any, i: number) => {
+        if(e && e.stopPropagation) e.stopPropagation();
         dispatch({type: DISPATCH_ACTIONS.DELETE_DEPARTMENT, payload: i});
     }
 
@@ -26,7 +27,8 @@ function DepartmentsList() {
                 <Box
                     key={department.id}
                     sx={{
-                        padding: '0 0 0 2.5rem'
+                        padding: '0 0 0 1.75rem',
+                        boxSizing: 'inherit'
                     }}
                 >
                     <Box 
@@ -34,7 +36,8 @@ function DepartmentsList() {
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
-                            width: '100%'
+                            width: '100%',
+                            boxSizing: 'inherit'
                         }}
                         onClick={() => handleOnClickDepartmentList(department.id)}   
                     >
@@ -44,9 +47,10 @@ function DepartmentsList() {
                                     color='warning' 
                                     size='small'
                                     sx={{
-                                        marginRight: '0.5rem'
+                                        marginRight: '0.5rem',
+                                        boxSizing: 'inherit'
                                     }}
-                                    onClick={() => handleOnDeleteDeparment(department.id)}
+                                    onClick={(e) => {handleOnDeleteDeparment(e, department.id); e.stopPropagation()}}
                                 >
                                     {<DeleteOutlineIcon /> }
                                 </IconButton>
@@ -56,7 +60,8 @@ function DepartmentsList() {
                             <Box sx={{
                                 display: 'inherit',
                                 alignItems: 'inherit',
-                                padding: '0.25rem 0 0'
+                                padding: '0.25rem 0 0',
+                                boxSizing: 'inherit'
                             }}>
                                 {index + 1}. {department.name}:
                                 {department.clicked ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
@@ -66,17 +71,19 @@ function DepartmentsList() {
                     {
                         department.clicked &&
                         <Box sx={{
-                            padding: '0 0 0 0'
+                            padding: '0 0 0 0',
+                            boxSizing: 'inherit'
                         }}>
                             <Box sx={{
-                                padding: '0 0 0 0'
+                                padding: '0 0 0 0',
+                                boxSizing: 'inherit'
                             }}>
                                 {<Years department = {department} />}
                             </Box>
                         </Box>
                     }
                 </Box>
-        )
+            )
         }
         )
 

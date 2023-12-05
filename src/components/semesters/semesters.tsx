@@ -28,18 +28,20 @@ function Semesters(props: {department: Department, year: Year}) {
     };
 
     return (
-            <Box sx={{padding: '0  0 0 2.25rem'}}>
+            <Box sx={{padding: '0  0 0 1.9rem'}}>
                 <Box sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    width: '100%'
+                    width: '100%',
+                    boxSizing: 'inherit'
                 }}>
                     <Tooltip title='Add semester'>
                         <IconButton 
                             color='info' 
                             size='small'
                             sx={{
-                                marginRight: '0.5rem'
+                                marginRight: '0.5rem',
+                                boxSizing: 'inherit'
                             }}
                             disabled = {!canAddSemester}
                             onClick={() => handleOnAddSemester({departmentID: department.id, yearID: year.id})}

@@ -21,16 +21,22 @@ function App() {
     <Box sx={{
       bgcolor: 'background.default',
       color: 'text.primary',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh'
     }}>
       <header>
         {<AppHeader theme = {theme} colorMode = {colorMode}/>}
       </header>
-      <main>
+      <main style={{
+        width: '100%',
+        flex: 'auto'
+      }}>
         {<AppMain theme = {theme} />}
       </main>
       <footer>
-        {<AppFooter theme = {theme}/>}
+        {<AppFooter theme = {theme} />}
       </footer>
     </Box>
   )
@@ -42,23 +48,49 @@ const AppHeader = (props: {theme: Theme, colorMode: { toggleColorMode: () => voi
   return (
     <Box sx={{
         height: '100%',
+        padding: '1rem 0',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         background: theme.palette.mode.toString() === 'dark' ? '#15202B' : 'lightgray',
-        boxSizing: 'border-box'
+        boxSizing: 'inherit'
     }}>
         <Box sx={{
-            padding: '0 0 0 2rem',
+            padding: '0 0 0 1.4rem',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            height: '100%'
+            height: '100%',
+            boxSizing: 'inherit'
         }}>
-            <Box sx={{margin: '0.25rem 1rem 0 -0.25rem'}}>
-              <img src="src/assets/react.svg" alt='react logo' />
+            <Box sx={{margin: '0.25rem 1rem 0 -0.25rem', boxSizing: 'inherit'}}>
+              <style>
+                {
+                  `
+                  .react_logo {
+                    animation: logo-spin infinite 20s linear;
+                  }
+                  
+                  @keyframes logo-spin {
+                    from {
+                      transform: rotate(0deg);
+                    }
+                    to {
+                      transform: rotate(360deg);
+                    }
+                  }
+                  `
+                }
+              </style>
+              <img 
+                className='react_logo'
+                src="src/assets/react.svg" 
+                alt='react logo' />
             </Box>
-            <Typography variant='body1' component='span'>
+            <Typography 
+              variant='body1' 
+              component='span'
+            >
                 <strong>MENTORS ASSIGNEMENTS REACT APP</strong>
             </Typography>
         </Box>
@@ -68,7 +100,7 @@ const AppHeader = (props: {theme: Theme, colorMode: { toggleColorMode: () => voi
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 1,
-            p: 3,
+            boxSizing: 'inherit'
           }}
         >
           <IconButton onClick={colorMode.toggleColorMode} color="inherit">
@@ -83,14 +115,19 @@ const AppFooter = (props: {theme: Theme}) => {
   const {theme} = props;
   return (
     <Box sx={{
+        padding: '0.5rem 0',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         height: '100%',
         background: theme.palette.mode.toString() === 'dark' ? '#15202B' : 'lightgray',
-        boxSizing: 'border-box'
+        boxSizing: 'inherit'
     }}>
-        <Typography variant='body2' component='span' sx={{color: 'text.secondary'}}>
+        <Typography 
+          variant='body2' 
+          component='span' 
+          sx={{color: 'text.secondary', boxSizing: 'inherit'}}
+        >
             Tech stack: React 18, Mui 5 
         </Typography>
     </Box>
