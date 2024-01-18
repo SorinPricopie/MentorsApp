@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { AppStateProvider, DISPATCH_ACTIONS } from "../main/app-main";
 import Box from "@mui/material/Box";
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -42,18 +42,26 @@ function DepartmentsList() {
                         onClick={() => handleOnClickDepartmentList(department.id)}   
                     >
                         <Box>
-                            <Tooltip title={`Delete ${department.name}`}>
-                                <IconButton 
-                                    color='warning' 
-                                    size='small'
-                                    sx={{
-                                        marginRight: '0.5rem',
-                                        boxSizing: 'inherit'
-                                    }}
-                                    onClick={(e) => {handleOnDeleteDeparment(e, department.id); e.stopPropagation()}}
-                                >
-                                    {<DeleteOutlineIcon /> }
-                                </IconButton>
+                            <Tooltip title={
+                                department.years.length > 0 ?
+                                `Cannot delete, department contains data` :
+                                `Delete ${department.name}`
+                                }
+                            >
+                                <span>
+                                    <IconButton 
+                                        color='warning' 
+                                        size='small'
+                                        sx={{
+                                            marginRight: '0.5rem',
+                                            boxSizing: 'inherit'
+                                        }}
+                                        disabled = {department.years.length > 0}
+                                        onClick={(e) => {handleOnDeleteDeparment(e, department.id); e.stopPropagation()}}
+                                    >
+                                        {<DeleteOutlineIcon /> }
+                                    </IconButton>
+                                </span>
                             </Tooltip>
                         </Box>
                         <Tooltip title={`${department.clicked ? 'Close' : 'Open'} ${department.name}`}>

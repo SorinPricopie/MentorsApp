@@ -1,12 +1,11 @@
 import Box from "@mui/material/Box";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppStateProvider, DISPATCH_ACTIONS } from "../main/app-main";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import MenuItem from "@mui/material/MenuItem";
 import Checkbox from "@mui/material/Checkbox";
 import ListItemText from "@mui/material/ListItemText";
@@ -25,9 +24,34 @@ function AddMentorForm(props: {isAddMentorFormVisible: () => void}) {
         }
     };
 
-    const languages: Language[] = appState.languagesList || [];
+    let languages: Language[] = appState.languagesList || [];
+    let uniqueLanguagesList: Language[] = [];
+    languages.forEach(language => {
+        if(uniqueLanguagesList.length > 0) {
+            if(!uniqueLanguagesList.map(item => item.name).includes(language.name)) {
+                uniqueLanguagesList = [...uniqueLanguagesList, language]
+            }
+        } else {
+            uniqueLanguagesList = [...uniqueLanguagesList, language];
+        }
+    });
+    
+    useEffect(() => {
+        languages = appState.languagesList || [];
+        languages.forEach(language => {
+            if(uniqueLanguagesList.length > 0) {
+                if(!uniqueLanguagesList.map(item => item.name).includes(language.name)) {
+                    uniqueLanguagesList = [...uniqueLanguagesList, language]
+                }
+            } else {
+                uniqueLanguagesList = [...uniqueLanguagesList, language];
+            }
+        });
+        setCanTeach(uniqueLanguagesList.map(language => language.name) || []);
+    }, [appState])
 
-    const [canTeach, setCanTeach] = useState<string[]>(languages.map(language => language.name) || []);
+
+    const [canTeach, setCanTeach] = useState<string[]>(uniqueLanguagesList.map(language => language.name) || []);
     const handleCanTeach = (event: SelectChangeEvent<typeof canTeach>) => {
         const {
             target: { value },
@@ -58,7 +82,7 @@ function AddMentorForm(props: {isAddMentorFormVisible: () => void}) {
             padding: '1rem',
             margin: '1rem 0',
             boxSizing: 'inherit'
-            }}>
+        }}>
             <Typography
                 variant="h6"
                 component='p'
@@ -68,6 +92,7 @@ function AddMentorForm(props: {isAddMentorFormVisible: () => void}) {
             >
                 ADD MENTOR FORM
             </Typography>
+            {isMentorNameInputValid.toString()}
             <Typography
                 variant='body1'
                 component='h3'
@@ -121,9 +146,8 @@ function AddMentorForm(props: {isAddMentorFormVisible: () => void}) {
                                 defaultValue={['0']}
                                 renderValue={(selected) => selected.join(', ')}
                                 onChange={(e) => handleCanTeach(e)}
-                                // MenuProps={MenuProps}
-                                >
-                                {languages.map((language) => (
+                            >
+                                {uniqueLanguagesList.map((language) => (
                                     <MenuItem key={language.id} value={language.name}>
                                         <Checkbox checked={canTeach.indexOf(language.name) > -1} />
                                         <ListItemText primary={language.name} />
@@ -153,7 +177,7 @@ function AddMentorForm(props: {isAddMentorFormVisible: () => void}) {
                         type='submit'
                         variant='outlined' 
                         color='success'
-                        disabled={!isMentorNameInputValid}
+                        disabled={canTeach.length === 0}
                         onClick={(e) => onSaveMentor(e)}
                     >
                         SAVE

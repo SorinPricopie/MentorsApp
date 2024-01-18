@@ -25,7 +25,6 @@ function AppAddLanguageForm(props: {department: Department, year: Year, semester
     const [languageRithm, setLanguageRithm] = useState(LANGUAGE_RITHM[0].rithm);
     const handleLanguageRithm = (e: SelectChangeEvent) => {
         setLanguageRithm(e.target.value);
-        console.log(_appState);
     }
 
     const [groupsInput, setGroupsInput] = useState(1);
@@ -42,6 +41,7 @@ function AppAddLanguageForm(props: {department: Department, year: Year, semester
             {
                 type: DISPATCH_ACTIONS.ADD_LANGUAGE, 
                 payload: {
+                    departmentName: department.name,
                     departmentID: department.id,
                     yearID: year.id,
                     semesterID: semester.id,
@@ -165,7 +165,6 @@ function AppAddLanguageForm(props: {department: Department, year: Year, semester
                         variant='outlined' 
                         color='success'
                         disabled={!isLanguageNameInputValid || !isGroupsInputValid}
-                        onClick={(e) => onSubmitAddLanguageForm(e)}
                     >
                         SAVE
                     </Button>

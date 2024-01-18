@@ -27,7 +27,7 @@ export interface Semester {
 
 export interface Language {
     name: string
-    id: number
+    id: string
     rithm: string
     groups: number
     clicked: boolean
@@ -38,15 +38,17 @@ export interface Mentor {
     id: number
     canTeach: string[]
     assignements: Assignement[]
+    totalEffort: number
 }
   
 export interface Assignement {
+    id: number | string,
     departmentName: string
     departmentID: number
     year: number
     semester: number
     language: string
-    languageID: number
+    languageID: string
     rithm: string
     hasVideo: boolean
     groups: number

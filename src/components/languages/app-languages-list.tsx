@@ -45,6 +45,7 @@ function AppLanguagesList(props: {department: Department, year: Year,  semester:
                                 boxSizing: 'inherit'
                             }}
                             onClick={() => handleOnClickLanguageList({
+                                departmentName: department.name,
                                 departmentID: department.id,
                                 yearID: year.id,
                                 semesterID: semester.id,
@@ -61,6 +62,7 @@ function AppLanguagesList(props: {department: Department, year: Year,  semester:
                                             boxSizing: 'inherit'
                                         }}
                                         onClick={(e) => handleOnDeleteLanguage(e, {
+                                            departmentName: department.name,
                                             departmentID: department.id,
                                             yearID: year.id,
                                             semesterID: semester.id,
@@ -78,7 +80,7 @@ function AppLanguagesList(props: {department: Department, year: Year,  semester:
                                     padding: '0.25rem 0 0',
                                     boxSizing: 'inherit'
                                 }}>
-                                    {index + 1}. {language.name}
+                                    {index + 1}. {language.name} {language.id}
                                     {language.clicked ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
                                 </Box>
                             </Tooltip>

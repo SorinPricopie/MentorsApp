@@ -8,7 +8,6 @@ import DepartmentsList from "./departments-list";
 import IconButton from "@mui/material/IconButton";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Tooltip from "@mui/material/Tooltip";
-import Button from "@mui/material/Button";
 
 function AppDepartments() {
     const _appState = useContext(AppStateProvider);
@@ -23,7 +22,6 @@ function AppDepartments() {
         <Box sx={{flex: 1, boxSizing: 'inherit', padding: '1rem'}}>
             <Box sx={{
                 display: 'flex',
-                // alignItems: 'center',
                 justifyContent: 'space-between',
                 margin: '0 0 0 -0.75rem',
                 boxSizing: 'inherit'
@@ -52,18 +50,6 @@ function AppDepartments() {
                     <Typography variant='h6' component='h2'>
                         DEPARTMENTS
                     </Typography>
-                </Box>
-                <Box sx={{
-                    boxSizing: 'inherit',
-                    display: 'flex',
-                    alignContent: 'center'
-                }}>
-                    <Button
-                        variant='text'
-                        color='info'
-                    >
-                        MANAGE LANGUAGES
-                    </Button>
                 </Box>
             </Box>
             {

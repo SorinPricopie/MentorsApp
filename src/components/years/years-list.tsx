@@ -36,18 +36,26 @@ function YearsList(props: {department: Department, year: Year, index: number}) {
                 onClick={() => handleOnClickYearList({departmentID: department.id, yearID: year.id})}
             >
                 <Box>
-                    <Tooltip title={`Delete year ${year.year}`}>
-                        <IconButton 
-                            color='warning' 
-                            size='small'
-                            sx={{
-                                marginRight: '0.5rem',
-                                boxSizing: 'inherit'
-                            }}
-                            onClick={() => handleOnDeleteYear({departmentID: department.id, yearID: year.id})}
-                        >
-                            {<DeleteOutlineIcon /> }
-                        </IconButton>
+                    <Tooltip title={
+                        year.semesters.length > 0 ?
+                            `Cannot delete, year contains data` :
+                            `Delete year ${year.year}`
+                        }
+                    >
+                        <span>
+                            <IconButton 
+                                color='warning' 
+                                size='small'
+                                sx={{
+                                    marginRight: '0.5rem',
+                                    boxSizing: 'inherit'
+                                }}
+                                disabled = {year.semesters.length > 0}
+                                onClick={() => handleOnDeleteYear({departmentID: department.id, yearID: year.id})}
+                            >
+                                {<DeleteOutlineIcon /> }
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Box>
                 <Tooltip title={`${year.clicked ? 'Close' : 'Open'} year ${year.year}`}>

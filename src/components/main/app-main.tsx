@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import { Theme } from "@mui/material/styles";
 import React, { Dispatch, useReducer } from "react";
-import {AppState, Language, Mentor, Semester, Year} from "./state-model";
+import {AppState, Assignement, Language, Mentor, Semester, Year} from "./state-model";
 import AppDepartments from "../departments/app-departments";
 import AppMentors from "../mentors/app-mentors";
 
@@ -27,13 +27,29 @@ export interface LanguageRithm {
 }
 
 export interface DeleteLanguagePayload {
+    departmentName: string,
     departmentID: number,
     yearID: number,
     semesterID: number,
     name?: string
-    id?: number
+    id?: string
     rithm?: string
     groups?: number
+}
+
+export interface AssignMentorPayload {
+    id: number,
+    assignement: Assignement
+}
+
+export interface EditMentorLanguagesPayload {
+    id: number,
+    canTeach: string[]
+}
+
+export interface DeleteAssignementPayload {
+    mentorID: number,
+    assignementID: string
 }
 
 export const enum DISPATCH_ACTIONS {
@@ -49,7 +65,10 @@ export const enum DISPATCH_ACTIONS {
     ADD_LANGUAGE,
     DELETE_LANGUAGE,
     CLICK_LANGUAGE_LIST,
-    ADD_MENTOR
+    ADD_MENTOR,
+    ASSIGN_MENTOR,
+    DELETE_ASSIGNED_MENTOR,
+    UPDATE_MENTOR_LANGUAGES
 };
 
 export const LANGUAGE_RITHM: LanguageRithm[] = [
@@ -73,11 +92,48 @@ export const LANGUAGE_RITHM: LanguageRithm[] = [
 
 type REDUCER_ACTIONS = {
     type:  DISPATCH_ACTIONS,
-    payload?: string | number | DeleteYearPayload | DeleteSemesterPayload | DeleteLanguagePayload | Mentor
+    payload?: 
+        string | 
+        number | 
+        DeleteYearPayload | 
+        DeleteSemesterPayload | 
+        DeleteLanguagePayload | 
+        Mentor |
+        AssignMentorPayload |
+        EditMentorLanguagesPayload |
+        DeleteAssignementPayload
 }
 
 const isNotDuplicate = (arr: string[], item: string): boolean => {
     return arr.includes(item) ? false : true;
+}
+
+const effortMatrix = [
+    {
+        rithm: '1/1',
+        videoEffort: 1,
+        groupsDivider: 2
+    },
+    {
+        rithm: '2/1',
+        videoEffort: 2,
+        groupsDivider: 2
+    },
+    {
+        rithm: '3/1',
+        videoEffort: 3,
+        groupsDivider: 2
+    },
+    {
+        rithm: '2/2',
+        videoEffort: 2,
+        groupsDivider: 1
+    }
+];
+
+const calculateEffort = (assignement: Assignement) => {
+    const effort = effortMatrix.filter( effort => effort.rithm === assignement.rithm)[0];
+    return effort.videoEffort + assignement.groups / effort.groupsDivider;
 }
 
 const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
@@ -137,6 +193,7 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
                             }
                         ]
                     };
+                
                 localStorage.setItem('appMentorData:', JSON.stringify(result))
             break;
         }
@@ -278,6 +335,7 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
         }
         case DISPATCH_ACTIONS.ADD_LANGUAGE: {
             const {
+                departmentName, 
                 departmentID, 
                 yearID, 
                 semesterID,
@@ -289,10 +347,20 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
             const year = department.years.filter(year => year.id === yearID)[0];
             const semester = year.semesters.filter(semester => semester.id === semesterID)[0];
 
+            const incrementIdx = (lastIdx: string) => {
+                const splitter = lastIdx.indexOf('-');
+                const incrementedIdx = +lastIdx.substring(splitter + 1) + 1;
+                return departmentName + yearID + semesterID + '-' +incrementedIdx;
+            }
+
+            let uniqueIdx = '';
+
             if(name && isNotDuplicate(semester.languages.map(language => language.name), name)) {
-                const newLanguageID: number = semester.languages.length > 0 ? 
-                semester.languages[semester.languages.length - 1].id + 1 :
-                1;
+                const newLanguageID: string = semester.languages.length > 0 ? 
+                incrementIdx(semester.languages[semester.languages.length - 1].id) :
+                departmentName + yearID + semesterID + '-' + 1;
+
+                uniqueIdx = newLanguageID;
     
                 const newSemesterLanguage: Language = {
                     name: name || '',
@@ -316,26 +384,20 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
                     }
                 });
     
-                const languageID = state.languagesList && state.languagesList.length > 0 ? state.languagesList[state.languagesList.length - 1].id + 1 : 1;
-    
                 const newLanguage: Language = {
                     name: name || '',
-                    id: languageID,
+                    id: uniqueIdx,
                     rithm: '',
                     groups: 0,
                     clicked: false
                 };
     
                 const hasLanguage = state.languagesList && state.languagesList.length > 0 ? true : false;
-    
-                const languages = state.departmentsList.map(language => language.name);
-    
-                state.languagesList = hasLanguage ? 
-                        languages.includes(name || '') ?
-                            state.languagesList :  [...(state.languagesList || []), newLanguage]
-                    :
-                    [...(state.languagesList || []), newLanguage];
-                
+
+                state.languagesList = !hasLanguage ?
+                    [newLanguage] : [...(state.languagesList || []), newLanguage]
+
+               
                 result = {...state};
             }
             break;
@@ -355,6 +417,8 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
                     })
                 }
             });
+
+            state.languagesList = state.languagesList?.filter(lannguage => lannguage.id !== id);
 
             result = {...state};
             break;
@@ -396,7 +460,8 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
                                 name: name ? name.toString() : '',
                                 id: id,
                                 canTeach: canTeach,
-                                assignements: []
+                                assignements: [],
+                                totalEffort: 0
                             }
                         ]
                     } :
@@ -407,10 +472,66 @@ const reducer = (state: AppState, action:  REDUCER_ACTIONS): AppState => {
                                 name: name ? name.toString() : '',
                                 id: id,
                                 canTeach: canTeach,
-                                assignements: []
+                                assignements: [],
+                                totalEffort: 0
                             }
                         ]
                     };
+            break;
+        }
+        case DISPATCH_ACTIONS.ASSIGN_MENTOR: {
+            const {id, assignement} = action.payload as AssignMentorPayload;
+            const newId = (id: number | string): string => {
+                const number = +(id.toString().replace(/[^0-9]/g, "")) + 1;
+                return number.toString();
+            }
+
+            state.mentorsList.forEach(mentor => {
+                if(mentor.id === id) {
+                    assignement.id = mentor.assignements.length > 0 ? assignement.language + '&&&&&' + newId(mentor.assignements[mentor.assignements.length - 1].id) : assignement.language + '&&&&&' + '1';
+                    assignement.effort = calculateEffort(assignement);
+                    mentor.assignements = [...mentor.assignements, assignement];
+                };
+
+                if(mentor.assignements.length === 1) {
+                    mentor.totalEffort = mentor.assignements[0].effort
+                }
+
+                if(mentor.assignements.length > 1) {
+                    mentor.totalEffort = mentor.assignements.map(item => item.effort).reduce((previous,current) => previous + current)
+                }
+            });
+
+            result = {...state};
+
+            break;
+        }
+        case DISPATCH_ACTIONS.DELETE_ASSIGNED_MENTOR: {
+            const {mentorID, assignementID} = action.payload as DeleteAssignementPayload;
+
+            state.mentorsList.forEach(mentor => {
+                if(mentor.id === mentorID) {
+                    mentor.assignements = mentor.assignements.filter(assignement => assignement.id !== assignementID);
+                }
+            });
+
+            result = {...state};
+
+            break;
+        }
+        case DISPATCH_ACTIONS.UPDATE_MENTOR_LANGUAGES: {
+            const {id, canTeach} = action.payload as EditMentorLanguagesPayload;
+            const newMentorsList = state.mentorsList;
+            newMentorsList.forEach(mentor => {
+                if(mentor.id === id) {
+                    mentor.canTeach = canTeach
+                }
+            })
+            result = {
+                ...state,
+                mentorsList : newMentorsList
+            }
+            
             break;
         }
         default: {
@@ -424,7 +545,6 @@ function AppMain(props: {theme: Theme}) {
     const {theme} = props;
     
     const _appState = JSON.parse(localStorage.getItem('appMentorData:') || '{}') || {};
-    // const _appState = {};
 
     const [appState, dispatch] = useReducer(reducer, _appState as AppState);
 
